@@ -1,15 +1,10 @@
 const express = require('express');
 const router = express.Router();
+const { getProducts, createProduct } = require('../controllers/productController');
+const { protect } = require('../middleware/authMiddleware');
 
-
-// Rutas CRUD para Productos
-const productController = require('../controllers/productController');
-
-// Crear un nuevo producto
-router.post('/products', productController.createProduct);
-
-// Obtener todos los productos
-router.get('/products', productController.getProducts);
-
+router.get('/', protect, getProducts);
+router.post('/', protect, createProduct);
 
 module.exports = router;
+

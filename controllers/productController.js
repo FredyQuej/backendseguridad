@@ -1,32 +1,26 @@
-const db = require('../db');
+const prisma = require('../db');
 
-// --- CREATE ---
-// Crear un nuevo producto (POST /api/products)
-exports.createProduct = async (req, res) => {
-    const { name, description, price } = req.body;
+// @desc    Obtener todos los productos
+const getProducts = async (req, res, next) => {
     try {
-        const result = await db.query(
-            'INSERT INTO products (name, description, price) VALUES ($1, $2, $3) RETURNING *',
-            [name, description, price]
-        );
-        res.status(201).json(result.rows[0]);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Error al crear el producto' });
+        // En una aplicación real, aquí iría la lógica para obtener productos
+        res.json({ message: 'Ruta de productos protegida funcionando.', user: req.user });
+    } catch (error) {
+        next(error);
     }
-}
+};
 
-exports.getProducts = async (req, res) => { 
+// @desc    Crear un producto
+const createProduct = async (req, res, next) => {
     try {
-        const result = await db.query('SELECT * FROM products');
-        res.status(200).json(result.rows);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Error al obtener los productos' });
+        // Lógica para crear un producto
+        res.status(201).json({ message: 'Producto creado exitosamente por ' + req.user.email });
+    } catch (error) {
+        next(error);
     }
-}
+};
 
-// --- READ ---
-// Obtener todos los productos (GET /api/products)
-
-
+module.exports = {
+    getProducts,
+    createProduct,
+};

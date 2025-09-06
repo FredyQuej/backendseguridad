@@ -1,27 +1,35 @@
 const express = require('express');
 require('dotenv').config();
 const cors = require('cors');
+
+// --- IMPORTACIONES ---
+// El error se origina si ALGUNO de los siguientes 'require' devuelve 'undefined'.
+const authRoutes = require('../routes/authRoutes');
 const productRoutes = require('../routes/productRoutes');
+const { errorHandler } = require('../middleware/errorMiddleware');
 
-
-
-// Inicializar la aplicación Express
+const PORT = process.env.PORT || 3000;
 const app = express();
+
+// --- MIDDLEWARES GLOBALES ---
+// Estos se ejecutan en cada petición.
 app.use(cors());
-
-// Middleware para parsear JSON
 app.use(express.json());
-app.get('/', (req, res) => {
-  res.send('API CRUD con PostgreSQL está funcionando!');
-});
+app.use(express.urlencoded({ extended: false }));
 
-// Usar las rutas de productos
-app.use('/api', productRoutes);
+// --- RUTAS DE LA API ---
+// Aquí es donde la app se conecta con los archivos de rutas.
+// Si 'authRoutes' o 'productRoutes' no es una función de router, la app se detendrá.
+app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
 
-// Configurar el puerto
-const PORT = process.env.PORT;
+// --- MANEJADOR DE ERRORES ---
+// ¡Importante! Este debe ser el ÚLTIMO middleware que se registra con app.use().
+// Captura cualquier error que ocurra en las rutas de arriba.
+app.use(errorHandler);
 
 // Iniciar el servidor
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
+
